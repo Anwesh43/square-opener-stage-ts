@@ -54,6 +54,7 @@ class SquareOpenerStepStage {
 
     canvas : HTMLCanvasElement = document.createElement('canvas')
     context : CanvasRenderingContext2D
+    renderer : Renderer = new Renderer()
 
     initCanvas() {
         this.canvas.width = w
@@ -65,11 +66,14 @@ class SquareOpenerStepStage {
     render() {
         this.context.fillStyle = '#BDBDBD'
         this.context.fillRect(0, 0, w, h)
+        this.renderer.render(this.context)
     }
 
     handleTap() {
         this.canvas.onmousedown = () => {
-
+            this.renderer.handleTap(() => {
+                this.render()
+            })
         }
     }
 
@@ -192,7 +196,7 @@ class SquareOpenerStep {
 class Renderer {
     sos : SquareOpenerStep = new SquareOpenerStep()
     animator : Animator = new Animator()
-    draw(context : CanvasRenderingContext2D) {
+    render(context : CanvasRenderingContext2D) {
         this.sos.draw(context)
     }
 
