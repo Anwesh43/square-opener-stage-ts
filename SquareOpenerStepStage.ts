@@ -19,27 +19,30 @@ const mirrorValue : Function = (scale : number, a : number, b : number) : number
 }
 
 const drawSOSNode : Function = (context, i, scale) => {
-    const gap : number = w / (nodes + 1)
-    const size : number = gap / sizeFactor
+    const xgap : number = w / (nodes + 1)
+    const ygap : number = h / (nodes + 1)
+    const size : number = Math.min(xgap, ygap) / sizeFactor
     const sc1 : number = divideScale(scale, 0, 2)
     const sc2 : number = divideScale(scale, 1, 2)
     context.strokeStyle = color
     context.lineCap = 'round'
     context.lineWidth = Math.min(w, h) / strokeFactor
     context.save()
-    context.translate(gap * (i + 1), h / 2)
+    context.translate(xgap * (i + 1), ygap * (i + 1))
     for (var j = 0; j < lines; j++) {
         const scc1 : number = divideScale(sc1, j, lines)
         const scc2 : number = divideScale(sc2, j, lines)
         context.save()
         context.rotate(Math.PI/2 * j)
         context.save()
-        context.translate(-size, size)
-        context.rotate(Math.PI/2 * scc2)
-        context.beginPath()
-        context.moveTo(0, 0)
-        context.lineTo(-2 * size * scc1, 0)
-        context.stroke()
+        context.translate(size, size)
+        context.rotate(-Math.PI/2 * scc2)
+        if (scc1 > 0) {
+            context.beginPath()
+            context.moveTo(0, 0)
+            context.lineTo(-2 * size * scc1, 0)
+            context.stroke()
+        }
         context.restore()
         context.restore()
     }
@@ -91,7 +94,8 @@ class State {
     prevScale : number = 0
 
     update(cb : Function) {
-        this.scale += updateScale(this.scale, lines, lines)
+        this.scale += updateScale(this.scale, this.dir, lines, lines)
+        console.log(this.scale)
         if (Math.abs(this.scale - this.prevScale) > 1) {
             this.scale = this.prevScale + this.dir
             this.dir = 0
@@ -145,8 +149,8 @@ class SOSNode {
 
     draw(context : CanvasRenderingContext2D) {
         drawSOSNode(context, this.i, this.state.scale)
-        if (this.next) {
-            this.next.draw(context)
+        if (this.prev) {
+            this.prev.draw(context)
         }
     }
 
