@@ -25,7 +25,7 @@ const drawSOSNode : Function = (context, i, scale) => {
     const sc2 : number = divideScale(scale, 1, 2)
     context.strokeStyle = color
     context.lineCap = 'round'
-    context.lineWidth = Math.min(w, h) / strokeFactor 
+    context.lineWidth = Math.min(w, h) / strokeFactor
     context.save()
     context.translate(gap * (i + 1), h / 2)
     for (var j = 0; j < lines; j++) {
@@ -78,5 +78,28 @@ class SquareOpenerStepStage {
         stage.initCanvas()
         stage.render()
         stage.handleTap()
+    }
+}
+
+class State {
+    scale : number = 0
+    dir : number = 0
+    prevScale : number = 0
+
+    update(cb : Function) {
+        this.scale += updateScale(this.scale, lines, lines)
+        if (Math.abs(this.scale - this.prevScale) > 1) {
+            this.scale = this.prevScale + this.dir
+            this.dir = 0
+            this.prevScale = this.scale
+            cb()
+        }
+    }
+
+    startUpdating(cb : Function) {
+        if (this.dir == 0) {
+            this.dir = 1 - 2 * this.prevScale
+            cb()
+        }
     }
 }
