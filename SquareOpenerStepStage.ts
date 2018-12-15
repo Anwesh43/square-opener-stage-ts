@@ -188,3 +188,23 @@ class SquareOpenerStep {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+    sos : SquareOpenerStep = new SquareOpenerStep()
+    animator : Animator = new Animator()
+    draw(context : CanvasRenderingContext2D) {
+        this.sos.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.sos.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.sos.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
